@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container pt-5">
+
+    <div class="pb-2">
+        <button class="btn btn-success and-all-other-classes">
+            <a href="{{ url_for('pedidos_create') }}" style="color:inherit">Novo</a>
+        </button>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nº Pedido</th>
+                <th scope="col">Nome do Cliente</th>
+                <th scope="col">Editar</th>
+                <th scope="col">Excluir</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pedido in pedidos %}
+            <tr>
+                <td>{{pedido.id}}</td>
+                <td id="{{pedido.Cliente.id}}">{{pedido.Cliente.nome}}</td>
+                <td><a data-id="0" href="{{url_for('pedidos_update', id=pedido.id)}}"><i
+                            class="material-icons">edit</i></a></td>
+                <td><a class="btnExcluir" data-id="{{pedido.id}}" data-toggle="modal" data-target="#exampleModal"
+                        href="#"><i class="material-icons">delete</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

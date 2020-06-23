@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container pt-5">
+
+    <div class="pb-2">
+        <button class="btn btn-success and-all-other-classes">
+            <a href="{{ url_for('produtos_create') }}" style="color:inherit">Novo</a>
+        </button>
+    </div>
+
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Preço Unitário</th>
+                <th scope="col">Editar</th>
+                <th scope="col">Excluir</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos %}
+            <tr>
+                <td id="{{produto.id}}">{{produto.nome}}</td>
+                <td>R${{produto.preco_unitario}}</td>
+                <td><a data-id="0" href="{{url_for('produtos_update', id=produto.id)}}"><i class="material-icons">edit</i></a></td>
+                <td><a class="btnExcluir" data-id="{{produto.id}}" data-toggle="modal" data-target="#exampleModal" href="#"><i
+                            class="material-icons">delete</i></a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    function deletar() {
+        $("#btnConfirmarExclusao").click(function () {
+            $.ajax({
+                url: '/produto/delete/' + Id + '',
+                type: 'GET',
+
+                success: function () {
+                    return window.location.reload();
+                }
+            });
+        });
+    }
+
+</script>
+{% endblock %}
