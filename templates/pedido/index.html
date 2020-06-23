@@ -21,16 +21,30 @@
             {% for pedido in pedidos %}
             <tr>
                 <td>{{pedido.id}}</td>
-                <td id="{{pedido.Cliente.id}}">{{pedido.Cliente.nome}}</td>
-                <td><a data-id="0" href="{{url_for('pedidos_update', id=pedido.id)}}"><i
-                            class="material-icons">edit</i></a></td>
-                <td><a class="btnExcluir" data-id="{{pedido.id}}" data-toggle="modal" data-target="#exampleModal"
-                        href="#"><i class="material-icons">delete</i></a>
-                </td>
+                <td id="{{pedido.id}}">{{pedido.Cliente}}</td>
+                    <td><a data-id="0" href="{{url_for('pedidos_update', id=pedido.id)}}"><i
+                                class="material-icons">edit</i></a></td>
+                    <td><a class="btnExcluir" data-id="{{pedido.id}}" data-toggle="modal" data-target="#exampleModal"
+                            href="#"><i class="material-icons">delete</i></a>
+                    </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+<script>
+    function deletar() {
+        $("#btnConfirmarExclusao").click(function () {
+            $.ajax({
+                url: '/pedido/delete/' + Id + '',
+                type: 'GET',
+
+                success: function () {
+                    return window.location.reload();
+                }
+            });
+        });
+    }    
+</script>
 
 {% endblock %}

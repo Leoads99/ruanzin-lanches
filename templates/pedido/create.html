@@ -98,7 +98,6 @@
 
         var data = { idCliente: idCliente, item: itemData }
 
-        console.log(data);
         fetch("/pedido/create", {
             method: "POST",
             headers: {
@@ -106,17 +105,9 @@
             },
             body: JSON.stringify(data)
         }).then(res => {
-            console.log("Request complete! response:", res);
+            window.location.href = "{{url_for('pedidos')}}";
         });
 
-        // $.ajax({
-        //     url: '/pedido/create',
-        //     type: 'POST',
-        //     data: data,
-        //     success: function () {
-        //         return window.location.reload();
-        //     }
-        // });
     }
 
 </script>

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container pt-5">
+
+    <div class="pb-2">
+        <a href="{{ url_for('pedidos') }}">Voltar</a>
+    </div>
+
+    <form action="{{url_for('pedidos_create')}}" method="POST">
+        <div class="form-group">
+            <label for="cliente">Cliente</label>
+            <select class="form-control" id="cliente">
+                {% for cliente in clientes %}
+                <option value="{{cliente.id}}">{{cliente.nome}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <h3>Selecione seus itens</h3>
+        <div id="itens" style="border:1px solid burlywood;">
+            
+        </div>
+        <div class="pt-2">
+            <button type="button" id="add" class="btn btn-success">Adicionar mais um item</button>
+        </div>
+        <div class="pt-5">
+            <button type="submit" id="submit" class="btn btn-primary">Cadastrar</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script>
+    var buttonElement = document.querySelector('#add');
+    var item = 0;
+    var produtosList;
+
+    var clienteSelect = document.querySelector('#cliente');
+    clienteSelect.selectedIndex = "{{pedido.Cliente}}";
+
+    carregaCampos(){
+        {{%for item in pedido.Items%}}
+            
+        {{endfor}}
+    }
+
+    buttonElement.onclick = function () {
+        criaCampos();
+    };
+
+    function criaCampos(){
+        item++;
+
+        var itemElement = '<hr />'
+        itemElement += 'Item ' + item;
+        itemElement += '<div class="form-group">'
+        itemElement += '<label">Selecione um item</label>'
+        itemElement += '<select class="form-control" name="item">'
+        {% for produto in produtos %}
+        itemElement += '<option value="{{produto.id}}">{{produto.nome}}</option>'
+        {% endfor %}
+        itemElement += ''
+        itemElement += '</div>'
+        $('#itens').append(itemElement);
+
+        itemElement = '<div class="form-group">'
+        itemElement += '<label>Quantidade</label>'
+        itemElement += '<input type="number" class="form-control" name="qtd">'
+        itemElement += '</div>'
+        $('#itens').append(itemElement);
+    }
+
+    var submitButton = document.querySelector('#submit');
+
+    submitButton.onclick = function () {
+        event.preventDefault()
+
+        var idCliente = $('#cliente').val();
+
+        var itensElement = document.getElementsByName('item');
+        var produtosIds = [];
+        itensElement.forEach(element => {
+            produtosIds.push(element.value);
+        });
+
+        var quantidadeElement = document.getElementsByName('qtd')
+        var Quantidades = [];
+        quantidadeElement.forEach(element => {
+            Quantidades.push(element.value);
+        });
+
+        var i = 0;
+        var itemData = [];
+        Quantidades.forEach(element => {
+            itemData.push({ produtoId: produtosIds[i], qtd: element });
+            i++;
+        });
+
+        var data = { idCliente: idCliente, item: itemData }
+
+        fetch("/pedido/edit", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        }).then(res => {
+            window.location.href = "{{url_for('pedidos')}}";
+        });
+
+    }
+
+</script>
+
+{% endblock %}

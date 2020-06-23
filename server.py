@@ -11,6 +11,7 @@ from models.item import Item
 
 from repositories.cliente import ClienteRepository
 from repositories.produto import ProdutoRepository
+from repositories.pedido import PedidoRepository
 
 app = Flask(__name__)
 
@@ -23,6 +24,7 @@ app.config['MYSQL_PORT'] = 3306
 db = MySQL(app)
 cliente_repository = ClienteRepository(db)
 produto_repository = ProdutoRepository(db)
+pedido_repository = PedidoRepository(db)
 
 
 @app.route("/")
@@ -119,21 +121,7 @@ def produtos_delete(id):
 #  ROTAS PEDIDO
 @app.route("/pedido", methods=['GET', ])
 def pedidos():
-    pedidos = []
-
-    cliente = Cliente("Joao", "123456", 1)
-
-    produto1 = Produto("X Tudo", 15, 1)
-    produto2 = Produto("X Salada", 10, 2)
-
-    item1 = Item(produto1, 2, 1)
-    item2 = Item(produto2, 1, 1)
-
-    pedido1 = Pedido(cliente, [item1, item2], 1)
-    pedido2 = Pedido(cliente, [item1, item2], 2)
-
-    pedidos.append(pedido1)
-    pedidos.append(pedido2)
+    pedidos = pedido_repository.get()
 
     return render_template("pedido/index.html", pedidos=pedidos)
 
@@ -144,29 +132,25 @@ def pedidos_create():
         clientes = cliente_repository.get()
         produtos = produto_repository.get()
 
-        return render_template("pedido/create.html", clientes = clientes, produtos=produtos)
+        return render_template("pedido/create.html", clientes=clientes, produtos=produtos)
     else:
         req = request.get_json()
-        print(req)
-        return jsonify({'status':'success'})
-        # cliente = request.form['idCliente']
-        # itens = request.form['item']
-        # print('asahsuahsuahsuahushausha',itens)
-        # pedido = Pedido(cliente, itens)
-        # print(pedido.Cliente.id)
-        # for teste in pedido.Items:
-        #     print(teste.produtoId, teste.qtd);
-        # produto_repository.save(pedido)
+        item = req['item']
+        pedido = Pedido(req['idCliente'], item)
 
-        # return redirect(url_for("pedidos"))
+        pedido_repository.save(pedido)
+
+        return jsonify({'status': 'success'})
 
 
 @app.route("/pedido/edit/<id>", methods=['GET', 'POST'])
 def pedidos_update(id):
     if request.method == 'GET':
-        pedidos = produto_repository.get(id)
-
-        return render_template("pedido/edit.html", pedido=pedidos, id=id)
+        pedido = pedido_repository.get(id)
+        clientes = cliente_repository.get()
+        produtos = produto_repository.get()
+        print(pedido)
+        return render_template("pedido/edit.html", clientes=clientes, produtos=produtos, pedido=pedido)
     else:
         nome = request.form['nome']
         cpf = request.form['cpf']
@@ -175,6 +159,12 @@ def pedidos_update(id):
         cliente_repository.save(cliente)
 
         return redirect(url_for("clientes"))
+
+
+@app.route("/pedido/delete/<id>")
+def pedido_delete(id):
+    pedido_repository.delete(id)
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 if __name__ == '__main__':
